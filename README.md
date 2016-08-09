@@ -7,6 +7,6 @@ Other variables include fips (census id for state), year. The data are organized
 Link to [Census data](https://www.census.gov/popest/data/historical/index.html). 
 
 
-+Author: Benjamin Tengelsen
-+Date: Aug 9, 2016
-+Code: Python 2.7, pandas, numpy
++   Author: Benjamin Tengelsen
++   Date: Aug 9, 2016
++   Code: Python 2.7, pandas, numpy
