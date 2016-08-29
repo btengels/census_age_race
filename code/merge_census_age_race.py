@@ -55,7 +55,6 @@ if __name__ == '__main__':
 	# put data in desired shape (year,state in columns, population by age and race in rows)
 	age_df = organize_demographydata( age_df_temp, var_list, demography_list  )
 
-
 	#---------1980 data-----------
 	# pull in demographic data
 	#-----------------------------
@@ -110,7 +109,6 @@ if __name__ == '__main__':
 	# reshape to desired format
 	age_df3 = organize_demographydata( age_df_temp3, var_list, demography_list )
 
-
 	#--------- 1990-1999 data ----------
 	# pull in demographic data
 	#-----------------------------------
@@ -159,7 +157,6 @@ if __name__ == '__main__':
 	# add totals for demographic variables
 	age_df4 = add_totals(age_df4, demography_list)
 
-
 	#--------- 2000-2010 data ----------
 	# pull in demographic data
 	#-----------------------------------
@@ -175,11 +172,12 @@ if __name__ == '__main__':
 	age_df_2000.drop('ORIGIN', axis=1, inplace=True)
 
 	# group over extra race variables
-	age_df_temp5 = age_df_2000.groupby(['fips','RACE','sex','age_bucket',]).agg(np.sum)
-	age_df_temp5['fips'] = [ j[0] for j in age_df_temp5.index ]	
-	age_df_temp5['RACE'] = [ j[1] for j in age_df_temp5.index ]	
-	age_df_temp5['sex'] = [ j[2] for j in age_df_temp5.index ]	
-	age_df_temp5['age_bucket'] = [ j[3] for j in age_df_temp5.index ]	
+	age_df_temp5 = age_df_2000.groupby(['fips','states','RACE','sex','age_bucket']).agg(np.sum)
+	age_df_temp5['fips'] = [ j[0] for j in age_df_temp5.index ]
+	age_df_temp5['states'] = [ j[1] for j in age_df_temp5.index ]	
+	age_df_temp5['RACE'] = [ j[2] for j in age_df_temp5.index ]	
+	age_df_temp5['sex'] = [ j[3] for j in age_df_temp5.index ]	
+	age_df_temp5['age_bucket'] = [ j[4] for j in age_df_temp5.index ]	
 	age_df_temp5.index = range(len(age_df_temp5))
 
 	# put year columns into rows and race/age rows into columns
@@ -187,7 +185,7 @@ if __name__ == '__main__':
 	for fip in age_df3.fips.unique():
 		temp_df5 = pd.DataFrame()
 		temp_df5['year'] = range(2000,2011)
-		temp_df5['fips'] = fip	
+		temp_df5['fips'] = fip
 
 		for sx, sxname in enumerate(['_male','_female']):
 			for r, rname in enumerate(['_white','_black','_other']):
@@ -235,13 +233,20 @@ if __name__ == '__main__':
 
 	age_df_2010.rename(columns=rename_dict, inplace=True)
 
+	#-----------------------------------
 	# add totals over demographic groups
+	#-----------------------------------
 	age_df6 = add_totals(age_df_2010, demography_list)
 
 	#-----------------------------------
 	# combine all demographic dataframes
 	#-----------------------------------
 	age_df = age_df.append([age_df2, age_df3, age_df4, age_df5, age_df6], ignore_index=True)
+	
+	#-----------------------------------
+	# add name of states
+	#-----------------------------------
+	age_df.merge( age_df_temp5[['fips','states']], left_on='fips', right_on='fips')
 
 	#-----------------------------------
 	# save data
